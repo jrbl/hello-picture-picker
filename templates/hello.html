@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+<head>
+  {% if name %}
+  <title>PicturePicker: {{ name }}</title>
+  {% else %}
+  <title>PicturePicker: goobly goobly!</title>
+  {% endif %}
+</head>
+
+<body>
+  {% autoescape false %}
+    {{ body }}
+  {% endautoescape %}
+</body>
+</html>

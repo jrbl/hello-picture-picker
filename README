@@ -1,0 +1,25 @@
+= Introduction =
+PicturePicker picks pictures from the web at random, in response to nearly 
+meaningless textual inputs (ie, tweets).  It pairs them, and shows them.
+
+Not much to it.
+
+= Requirements = 
+* flask         http://flask.pocoo.org
+* simplejson    http://pypi.python.org/pypi/simplejson/
+
+This version of PicturePicker is a crude prototype written in python, and self-
+hosting via the http micro server available via the Flask framework.  It relies 
+on several other features of Flask, too.
+
+Parsing of web services results is via simplejson, so you'll need that too.
+
+These may imply their own dependencies.  While you should never use this code 
+in production, if you *were* going to do that, you would deploy it by making a 
+Debian package, right?  And naturally if you make a Debian package, the
+dependency graph can be safely ignored.  What I mean to say is: good luck.
+
+= Installation =
+What, are you kidding me?  chmod +x the file and run it with 
+$ python hello.py
+
