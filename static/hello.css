@@ -1,4 +1,62 @@
 /* sample css for flask hello world quickstart code */
-h1 {
-    text-align: right;
+body {
+    background-color: green;
+    color: white;
+    font-size: small;
+}
+
+a {
+    color: black;
+}
+
+#InputElements {
+    margin-left: 10%;
+    margin-right: 10%;
+    background-color: #ccffac;
+    color: black;
+    font-size: large;
+    text-align: center;
+}
+
+#whobox {
+    margin-top: 10px;
+    margin-left: 10%;
+    width: 80%;
+    margin-right: 10%;
+    background-color: white;
+    font-size: large;
+    text-align: center;
+}
+
+#whatbutton {
+    margin-left: 10%;
+    width: 80%;
+    margin-right: 10%;
+    font-size: large;
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+#Disclaimers {
+    font-size: x-small;
+    color: black;
+    background-color: #43ee22;
+    margin-left: 20%;
+    margin-right: 20%;
+    width: 60%;
+}
+
+div.tweetdiv {
+    margin-left: 15%;
+    margin-right: 15%;
+    width: 70%;
+    text-align: center;
+    background-color: #43ee22;
+}
+
+img.tweetpic {
+    text-align: center;
+    margin-left: 2%;
+    margin-right: 2%;
 }

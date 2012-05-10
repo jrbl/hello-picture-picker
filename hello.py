@@ -28,6 +28,19 @@ COMMON_SHORTENERS = [re.compile('(?P<url>'+rex+')') for rex in
                                           '\w+\.com/\S+',
                                          ]]
 
+def print_help():
+    helpstr = """
+python hello.py [-d] [-i <ip_addr>]
+    A silly toy for the internet.  Defaults to running on 127.0.0.1:5000.
+
+-d: DEBUG on: turns on full stack traces: do not do with -i!!
+-i: specify IP address to bind to.  to serve on the public Internet, use this
+    option.  Do not use with -d.
+"""
+    print helpstr
+    return
+
+
 def searchable(s):
     """Strip out the junk from s so it's easier to find good pictures"""
     s = s.strip()
@@ -52,6 +65,15 @@ def linkable(s):
 
 
 @app.route("/")
+@app.route("/<path:staticfile>")
+def index(staticfile=None):
+    """Useful if you want to be able to get things like .css and .js files"""
+    if staticfile:
+        # this doesn't perform well; should be set up in a proper webserver
+        flask.send_from_directory('static', staticfile)
+    else:
+        return hello()
+
 @app.route("/hello")
 @app.route("/hello/")
 @app.route("/hello/<name>")
@@ -67,7 +89,7 @@ def hello(name=None):
     output = ''
 
     for tweet in tweetlist:
-        search = searchable(u'funny ' + tweet)
+        search = searchable(u'hilarious ' + tweet)
         try:
             search = google_api_base + urllib.urlencode({'v': 1.0, 'q': search, #'imgsz': 'medium',
                                                          'rsz': 8, 'safe': 'off'})
@@ -80,18 +102,23 @@ def hello(name=None):
             continue
         pic_url = random.choice(search_results)['url']
         #pic_url = search_results[0]['url']
-        output += '<p>'+linkable(tweet)+'<br />'+'<img src='+pic_url+' /></p>'
+        output += '<div class="tweetdiv"><p class="tweettext">'+linkable(tweet)
+        output += '</p>'+'<img class="tweetpic" src='+pic_url+' /></div>'
 
     return flask.render_template('hello.html', name=name, body=output)
+
 
 if __name__ == "__main__":
     import sys
     from getopt import getopt
 
-    optvals, args = getopt(sys.argv[1:], 'di:', ['debug', 'ip'])
+    optvals, args = getopt(sys.argv[1:], 'di:h', ['debug', 'ip', 'help'])
     opts = dict(optvals)
 
     app.debug = True if opts.has_key('-d') else False
+    if opts.has_key('-h'):
+        print_help()
+        sys.exit()
     if opts.has_key('-k') and app.debug:
         app.secret_key = opts['-k']
     else:

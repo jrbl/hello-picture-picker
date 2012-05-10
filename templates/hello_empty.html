@@ -2,24 +2,75 @@
 <html>
 <head>
   <title>PicturePicker: Who to Pick?</title>
+  <link rel=stylesheet href="/static/hello.css" type="text/css" />
+
+  <script type="text/javascript">
+  function prefill_boxes() {
+    /* Find all of the boxes with class 'prefill' having attribute 'prefill=...
+       and set their value to be the prefill.  Then add handlers to them:
+       on focus, check whether value = prefill and blank it if it is; 
+       on focus lost, check whether value = blank and set to prefill if it is
+     */  
+     var i, to_fill;
+     i = 0;
+     to_fill = document.getElementsByClassName('prefill');
+     for (i = 0; i < to_fill.length; i++) {
+
+        to_fill[i].value = to_fill[i].getAttribute('prefill');
+        function blank_prefill_on_focus(e) { 
+            if (this.value === this.getAttribute('prefill')) {
+                this.value = ''; 
+                this.classList.toggle('prefill_default_text')
+            }
+        }
+        function prefill_blank_on_blur(e) {
+            if (this.value === '') {
+                this.value = this.getAttribute('prefill');
+                this.classList.toggle('prefill_default_text')
+            }
+        }
+
+        to_fill[i].onblur = prefill_blank_on_blur;
+        to_fill[i].onfocus = blank_prefill_on_focus;
+     }   
+    }
+
+    function doButtonClick() {
+        var pick_for = document.getElementById('whobox').value;
+        if (pick_for[0] === '@') {
+            pick_for = pick_for.slice(1);
+        }
+        window.location = '/hello/' + pick_for;
+    }
+    
+    window.onload = function() {
+        prefill_boxes();
+    }
+  </script>
+
 </head>
 
 <body>
- <p>
-  <input type="text" name="who" text="type here who to pick">
- </p>
- <p>
-  <b>N.B.:</b>This is a very old-school app, with little or no clever ajax
-  trickery to make slow things seem like they're fast.  You're about to
-  load a bunch of tweets, then load a bunch of pictures, then render a page
-  with them all.  You'll have to wait for all of that.
- </p>
- <p>
-  Note also that no effort has been made to constrain the size of the images
-  shown or screen them for safety.  During development, I tried various things
-  but while I could get consistent results, they were consistently boring.
-  Leaving this underspecified makes the occasional winning combination of 
-  words and picture... really <i>win</i>.
- </p>
+ <div id="InputElements">
+  <input type="text" id="whobox" prefill="Step 1: type here: a twitter ID to pick for" class="prefill" /><br />
+  <button id="whatbutton" onClick=doButtonClick()>Step 2: Clicke here to start picking!</button>
+ </div>
+ <div id="Disclaimers">
+  <p>
+   <b>N.B.:</b>This is a very old-school app, with very little ajax
+   trickery to make slow things seem like they're fast.  You're about to
+   load a bunch of tweets, then load a bunch of pictures, then render a page
+   with them all.  You'll have to wait for all of that.  And nothing will be
+   cached, so if you hate your results and hit reload, you'll have to wait for
+   them again.  Sorry.
+  </p>
+  <p>
+   Note also that no effort has been made to constrain the size of the images
+   shown or screen them for safety.  During development, I tried various things
+   but while I could get consistent results, they were consistently boring.
+   Leaving this underspecified makes the occasional winning combination of 
+   words and picture... really <i>win</i>.
+  </p>
+ </div>
 </body>
 </html>
