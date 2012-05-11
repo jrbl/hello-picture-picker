@@ -7,12 +7,15 @@ Not much to it.
 = Requirements = 
 * flask         http://flask.pocoo.org
 * simplejson    http://pypi.python.org/pypi/simplejson/
+* lxml.html     http://lxml.de
 
 This version of PicturePicker is a crude prototype written in python, and self-
 hosting via the http micro server available via the Flask framework.  It relies 
 on several other features of Flask, too.
 
 Parsing of web services results is via simplejson, so you'll need that too.
+
+Parsing of resulting web content is via lxml.html, which is teh awesome.  
 
 These may imply their own dependencies.  While you should never use this code 
 in production, if you *were* going to do that, you would deploy it by making a 
@@ -23,3 +26,14 @@ dependency graph can be safely ignored.  What I mean to say is: good luck.
 What, are you kidding me?  chmod +x the file and run it with 
 $ python hello.py
 
+= ToDo =
+Much, including making a fancy ajax version, and making picture selection
+better.
+
+Idea for making picture selection better: Can google (or bing?) give us a 
+score for how good a picture was for our search?  If so, set a cutoff and 
+any time we go below the cutoff we pick a random picture from 
+cuteoverload.com instead.
+
+Another idea for making picture selection better: actually maybe we should just
+pair everything with random pictures from cuteoverload.

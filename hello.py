@@ -7,8 +7,8 @@ search for those texts, choosing pictures at random from the results.  Then it
 mashes them up, and shows them to the user.  Fun!
 """
 
-import flask                 # http://http://flask.pocoo.org/
-import lxml.html
+import flask                 # http://flask.pocoo.org/
+import lxml.html             # http://lxml.de/
 import os
 import random
 import re
@@ -27,16 +27,17 @@ COMMON_SHORTENERS = [re.compile('(?P<url>'+rex+')') for rex in
                                           'dlvr.it/\S+',
                                           '\w+\.com/\S+',
                                          ]]
+IP_PORT = 54321
 
 def print_help():
     helpstr = """
 python hello.py [-d] [-i <ip_addr>]
-    A silly toy for the internet.  Defaults to running on 127.0.0.1:5000.
+    A silly toy for the internet.  Defaults to running on 127.0.0.1:%d.
 
 -d: DEBUG on: turns on full stack traces: do not do with -i!!
 -i: specify IP address to bind to.  to serve on the public Internet, use this
     option.  Do not use with -d.
-"""
+""" % IP_PORT
     print helpstr
     return
 
@@ -81,27 +82,34 @@ def hello(name=None):
     """Main driver, also serves as index"""
     if not name:
         return flask.render_template('hello_empty.html')
-
-    txt = '\n'.join(urllib2.urlopen('http://mobile.twitter.com/'+name).readlines())
+    
+    try:
+        # mobile twitter is easy to scrape
+        handle = urllib2.urlopen(u'http://mobile.twitter.com/'+name)
+    except urllib2.HTTPError:
+        # TODO: pop up a nice message explaining that their page couldn't be found
+        return index()
+    txt = '\n'.join(handle.readlines())
     tree = lxml.html.document_fromstring(txt)
     tweetlist = [t.text_content().strip() for t in tree.body.find_class('tweet-content')]
+    # XXX: google ajax api is limited to 8 results per hit
     google_api_base = u'https://ajax.googleapis.com/ajax/services/search/images?'
     output = ''
 
     for tweet in tweetlist:
         search = searchable(u'hilarious ' + tweet)
         try:
-            search = google_api_base + urllib.urlencode({'v': 1.0, 'q': search, #'imgsz': 'medium',
+            search = google_api_base + urllib.urlencode({'v': 1.0, 'q': search, 
+                                                        #'imgsz': 'medium', # restrictions make it worse
                                                          'rsz': 8, 'safe': 'off'})
         except UnicodeEncodeError:
-            # I haven't got my unicode handling right here yet
+            # XXX: I haven't got my unicode handling right here yet, but we can at least avoid exceptions
             continue
         search_results = simplejson.loads('\n'.join(urllib2.urlopen(search).readlines()))
         search_results = search_results['responseData']['results']
         if len(search_results) == 0:
             continue
         pic_url = random.choice(search_results)['url']
-        #pic_url = search_results[0]['url']
         output += '<div class="tweetdiv"><p class="tweettext">'+linkable(tweet)
         output += '</p>'+'<img class="tweetpic" src='+pic_url+' /></div>'
 
@@ -119,13 +127,9 @@ if __name__ == "__main__":
     if opts.has_key('-h'):
         print_help()
         sys.exit()
-    if opts.has_key('-k') and app.debug:
-        app.secret_key = opts['-k']
-    else:
-        app.secret_key = '3edafd5e-0129-11e1-a693-0026b9ce365e'
     if opts.has_key('-i'):
         if app.debug:
             print "Debugging is insecure; don't do it while listening on a public IP."
             sys.exit(187)
-        app.run(host=opts['-i'])
-    app.run()
+        app.run(host=opts['-i'], port=IP_PORT)
+    app.run(port=IP_PORT)
